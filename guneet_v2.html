@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guneet: The Ultimate Legend ✨</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --accent: #ff007f;
+            --bg-grad: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-grad);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            transition: 0.5s;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 30px;
+            padding: 40px;
+            margin: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            transform-style: preserve-3d;
+            transition: transform 0.1s;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 2px 4px 10px rgba(0,0,0,0.1);
+            margin: 0;
+        }
+
+        .sub-text {
+            color: white;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* The Game Area */
+        #game-stage {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            background: rgba(0,0,0,0.05);
+            border-radius: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .bubble {
+            position: absolute;
+            background: radial-gradient(circle at 30% 30%, white, rgba(255,255,255,0.2));
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.5);
+            animation: floatUp 4s linear forwards;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+        }
+
+        @keyframes floatUp {
+            from { transform: translateY(450px) scale(0.5); opacity: 1; }
+            to { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .mood-slider {
+            margin-top: 20px;
+            width: 80%;
+            accent-color: var(--accent);
+        }
+
+        .pookie-btn {
+            background: white;
+            color: var(--accent);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .pookie-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="glass-card" id="main-card">
+        <p class="sub-text">You are simply the best</p>
+        <h1>GUNEET ✨</h1>
+        <p style="color: white; font-size: 1.1rem;">I'm so proud of you. Pop the "Bad Vibes" bubbles to see what I really think of you!</p>
+
+        <div class="stats">
+            <span>Score: <span id="score">0</span></span>
+            <span>Status: <span id="status">Pookie GOAT 🏆</span></span>
+        </div>
+
+        <div id="game-stage">
+            </div>
+
+        <button class="pookie-btn" onclick="megaBlast()">Mega Confetti Blast! 🧨</button>
+        
+        <div style="margin-top: 20px;">
+            <label style="color: white; display: block; margin-bottom: 10px;">Adjust the Vibe:</label>
+            <input type="range" class="mood-slider" min="0" max="360" value="0" oninput="changeHue(this.value)">
+        </div>
+    </div>
+
+    <script>
+        const card = document.getElementById('main-card');
+        const stage = document.getElementById('game-stage');
+        const scoreEl = document.getElementById('score');
+        let score = 0;
+
+        // 3D Tilt Effect
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Bubble Game Logic
+        const emojis = ['💖', '🌟', '🍭', '🌸', '👑', '🌈'];
+        const compliments = ["You're a genius!", "Proud of you!", "Keep shining!", "Bestie goals!", "Unstoppable!", "So smart!"];
+
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 60 + 40 + 'px';
+            bubble.style.width = size;
+            bubble.style.height = size;
+            bubble.style.left = Math.random() * (stage.clientWidth - 60) + 'px';
+            bubble.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            bubble.onclick = (e) => {
+                e.stopPropagation();
+                score += 10;
+                scoreEl.innerText = score;
+                
+                // Show floating text
+                const text = document.createElement('span');
+                text.innerText = compliments[Math.floor(Math.random() * compliments.length)];
+                text.style.position = 'absolute';
+                text.style.left = bubble.style.left;
+                text.style.top = bubble.style.top;
+                text.style.color = 'white';
+                text.style.fontWeight = 'bold';
+                text.style.pointerEvents = 'none';
+                stage.appendChild(text);
+                
+                setTimeout(() => text.remove(), 1000);
+                
+                bubble.remove();
+                confetti({
+                    particleCount: 20,
+                    spread: 50,
+                    origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight }
+                });
+            };
+
+            stage.appendChild(bubble);
+            setTimeout(() => { if(bubble.parentNode) bubble.remove(); }, 4000);
+        }
+
+        setInterval(createBubble, 800);
+
+        function changeHue(val) {
+            document.body.style.filter = `hue-rotate(${val}deg)`;
+        }
+
+        function megaBlast() {
+            confetti({
+                particleCount: 200,
+                spread: 160,
+                origin: { y: 0.6 }
+            });
+        }
+    </script>
+</body>
+</html>
